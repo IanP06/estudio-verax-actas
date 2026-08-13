@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@theme {
+  --color-verax-blue: #384969;
+  --color-verax-blue-dark: #2A3750;
+  --color-verax-blue-light: #4A5D82;
+  --color-verax-red: #B53B3A;
+  --color-verax-red-dark: #942C2B;
+  --color-verax-red-light: #D45251;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-100 text-slate-900 font-sans antialiased min-h-screen selection:bg-verax-red selection:text-white;
+  }
+}
+
+/* Custom scrollbars for clean split view */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(56, 73, 105, 0.4);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(56, 73, 105, 0.7);
+}
