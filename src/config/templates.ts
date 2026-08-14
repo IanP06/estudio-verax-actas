@@ -57,7 +57,7 @@ Se suscribe bajo firma digital con la plataforma ADOBE ACROBAT SIGN a la casilla
   {
     id: 'ANTARTIDA_TERCERO_NO_SEGURO',
     companyId: 'ANTARTIDA',
-    title: 'Desiste de la Acción y del Derecho - Tercero Sin Seguro',
+    title: 'Desiste de la Acción y del Derecho - No Seguro',
     type: 'TERCERO_NO_SEGURO',
     fields: ['FECHA', 'NUMERO_SINIESTRO', 'NOMBRE_COMPLETO', 'DATOS_VEHICULO_ASEGURADO', 'CAUSANTE_DANO', 'EMAIL', 'DNI'],
     bodyTemplate: `DESISTE DE LA ACCIÓN Y DEL DERECHO.
@@ -121,7 +121,7 @@ Se suscribe bajo firma digital con la plataforma ADOBE ACROBAT SIGN a la casilla
   {
     id: 'ATM_TERCERO_NO_SEGURO',
     companyId: 'ATM',
-    title: 'Desiste de la Acción y del Derecho - Tercero Sin Seguro',
+    title: 'Desiste de la Acción y del Derecho - No Seguro',
     type: 'TERCERO_NO_SEGURO',
     fields: ['FECHA', 'NUMERO_SINIESTRO', 'NOMBRE_COMPLETO', 'DATOS_VEHICULO_ASEGURADO', 'CAUSANTE_DANO', 'EMAIL', 'DNI'],
     bodyTemplate: `DESISTE DE LA ACCIÓN Y DEL DERECHO.
@@ -185,7 +185,7 @@ Se suscribe bajo firma digital con la plataforma ADOBE ACROBAT SIGN a la casilla
   {
     id: 'PROVINCIA_TERCERO_NO_SEGURO',
     companyId: 'PROVINCIA',
-    title: 'Desiste de la Acción y del Derecho - Tercero Sin Seguro',
+    title: 'Desiste de la Acción y del Derecho - No Seguro',
     type: 'TERCERO_NO_SEGURO',
     fields: ['FECHA', 'NUMERO_SINIESTRO', 'NOMBRE_COMPLETO', 'DATOS_VEHICULO_ASEGURADO', 'CAUSANTE_DANO', 'EMAIL', 'DNI'],
     bodyTemplate: `DESISTE DE LA ACCIÓN Y DEL DERECHO.
@@ -250,7 +250,7 @@ Se suscribe bajo firma digital con la plataforma ADOBE ACROBAT SIGN a la casilla
   {
     id: 'SANCOR_TERCERO_NO_SEGURO',
     companyId: 'SANCOR',
-    title: 'Desiste de la Acción y del Derecho - Tercero Sin Seguro',
+    title: 'Desiste de la Acción y del Derecho - No Seguro',
     type: 'TERCERO_NO_SEGURO',
     fields: ['FECHA', 'NUMERO_SINIESTRO', 'NOMBRE_COMPLETO', 'DATOS_VEHICULO_ASEGURADO', 'CAUSANTE_DANO', 'EMAIL', 'DNI'],
     bodyTemplate: `DESISTE DE LA ACCIÓN Y DEL DERECHO.

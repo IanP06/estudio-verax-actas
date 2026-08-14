@@ -39,6 +39,9 @@ export const actaFormSchema = z.object({
   // Causante del Daño (Campo condicional)
   causanteDano: z.string().optional(),
 
+  // Texto / Párrafo Adicional Libre
+  textoAdicional: z.string().optional(),
+
   // Meta
   lugarEmision: z.string().min(1),
   fechaEmision: z.string().min(1),

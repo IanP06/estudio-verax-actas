@@ -28,6 +28,7 @@ export function App() {
     vehiculoModelo: '',
     vehiculoDominio: '',
     causanteDano: '',
+    textoAdicional: '',
     email: '',
     dni: '',
     lugarEmision: 'La Plata',

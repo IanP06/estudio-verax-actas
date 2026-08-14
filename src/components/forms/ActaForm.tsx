@@ -12,7 +12,8 @@ import {
   Car,
   AlertTriangle,
   RotateCcw,
-  Tag
+  Tag,
+  FileEdit
 } from 'lucide-react';
 import { COMPANIES, ACTA_TEMPLATES } from '../../config/templates';
 import type { Company, DocumentTemplate } from '../../config/templates';
@@ -93,6 +94,7 @@ export const ActaForm: React.FC<ActaFormProps> = ({
       vehiculoModelo: '',
       vehiculoDominio: '',
       causanteDano: '',
+      textoAdicional: '',
       email: '',
       dni: '',
       lugarEmision: 'La Plata',
@@ -397,12 +399,12 @@ export const ActaForm: React.FC<ActaFormProps> = ({
         </div>
       )}
 
-      {/* 5. CAUSANTE DEL DAÑO (TERCERO SIN SEGURO) */}
+      {/* 5. CAUSANTE DEL DAÑO */}
       {hasField('CAUSANTE_DANO') && (
         <div className="bg-rose-50/40 p-5 rounded-2xl border border-rose-200/80 shadow-sm space-y-3">
           <h2 className="text-sm font-bold text-rose-900 uppercase tracking-wider flex items-center gap-2 border-b border-rose-200/60 pb-2.5">
             <AlertTriangle className="w-4 h-4 text-verax-red" />
-            5. Causante del Daño (Tercero Sin Seguro)
+            5. CAUSANTE DEL DAÑO
           </h2>
 
           <div>
@@ -419,6 +421,27 @@ export const ActaForm: React.FC<ActaFormProps> = ({
           </div>
         </div>
       )}
+
+      {/* 6. TEXTO / PÁRRAFO ADICIONAL (OPCIONAL) */}
+      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2.5">
+          <FileEdit className="w-4 h-4 text-verax-red" />
+          Texto / Párrafo Adicional (Opcional)
+        </h2>
+
+        <div>
+          <label className="block text-xs font-semibold text-slate-600 mb-1">
+            Texto personalizado que se anexará al final del párrafo principal del PDF
+          </label>
+          <textarea
+            rows={3}
+            tabIndex={13}
+            placeholder=""
+            {...register('textoAdicional')}
+            className="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-verax-blue/20 focus:border-verax-blue transition"
+          />
+        </div>
+      </div>
     </form>
   );
 };
