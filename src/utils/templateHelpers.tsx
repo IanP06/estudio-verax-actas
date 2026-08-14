@@ -31,6 +31,16 @@ export function formatDateToArgentine(dateStr?: string): string {
 export function interpolateTemplate(rawTemplate: string, data: ActaFormData): string {
   if (!rawTemplate) return '';
 
+  let fullTemplate = rawTemplate;
+  if (data.textoAdicional && data.textoAdicional.trim()) {
+    const extra = data.textoAdicional.trim();
+    if (fullTemplate.includes('Se suscribe bajo')) {
+      fullTemplate = fullTemplate.replace(/(\n\n)?(Se suscribe bajo)/, `\n\n${extra}\n\n$2`);
+    } else {
+      fullTemplate = `${fullTemplate}\n\n${extra}`;
+    }
+  }
+
   const fechaFormatted = formatDateToArgentine(data.fecha || data.fechaEmision);
   const fechaOcurrenciaFormatted = formatDateToArgentine(data.fechaOcurrencia || data.fechaDenuncia);
   const dniFormatted = formatDniWithDots(data.dni);
@@ -41,7 +51,7 @@ export function interpolateTemplate(rawTemplate: string, data: ActaFormData): st
       ? `marca ${data.vehiculoMarca || '—'}, modelo ${data.vehiculoModelo || '—'}, dominio ${data.vehiculoDominio ? data.vehiculoDominio.toUpperCase() : '—'}`
       : '[DATOS DEL VEHÍCULO ASEGURADO]';
 
-  return rawTemplate
+  return fullTemplate
     .replace(/{{FECHA}}/g, fechaFormatted || '[FECHA]')
     .replace(/{{NUMERO_SINIESTRO}}/g, data.numeroSiniestro || '[N° SINIESTRO]')
     .replace(/{{NUMERO_POLIZA}}/g, data.numeroPoliza || '[N° PÓLIZA]')
@@ -59,10 +69,21 @@ export function interpolateTemplate(rawTemplate: string, data: ActaFormData): st
 }
 
 /**
- * Genera fragmentos React-PDF para que todos los campos completos (variables) se muestren en NEGRITA (Helvetica-Bold)
+ * Genera fragmentos React-PDF para que todos los campos completos (variables) se muestren en NEGRITA (Helvetica-Bold).
+ * Inserta el párrafo adicional como un párrafo independiente ANTES del párrafo "Se suscribe bajo..."
  */
 export function renderBoldBodyText(rawTemplate: string, data: ActaFormData): React.ReactNode[] {
   if (!rawTemplate) return [];
+
+  let fullTemplate = rawTemplate;
+  if (data.textoAdicional && data.textoAdicional.trim()) {
+    const extra = data.textoAdicional.trim();
+    if (fullTemplate.includes('Se suscribe bajo')) {
+      fullTemplate = fullTemplate.replace(/(\n\n)?(Se suscribe bajo)/, `\n\n${extra}\n\n$2`);
+    } else {
+      fullTemplate = `${fullTemplate}\n\n${extra}`;
+    }
+  }
 
   const fechaFormatted = formatDateToArgentine(data.fecha || data.fechaEmision);
   const fechaOcurrenciaFormatted = formatDateToArgentine(data.fechaOcurrencia || data.fechaDenuncia);
@@ -108,7 +129,7 @@ export function renderBoldBodyText(rawTemplate: string, data: ActaFormData): Rea
     }
   };
 
-  const parts = rawTemplate.split(/({{[A-Z_]+}})/g);
+  const parts = fullTemplate.split(/({{[A-Z_]+}})/g);
 
   return parts.map((part, index) => {
     const match = part.match(/^{{([A-Z_]+)}}$/);
@@ -146,6 +167,7 @@ export function getSampleFormData(): ActaFormData {
     vehiculoModelo: '',
     vehiculoDominio: '',
     causanteDano: '',
+    textoAdicional: '',
     email: '',
     dni: '',
     lugarEmision: 'La Plata',

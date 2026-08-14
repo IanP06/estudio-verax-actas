@@ -161,7 +161,6 @@ export const ActaPdfDocument: React.FC<ActaPdfDocumentProps> = ({
   companyLogoUrl = LOGO_DATA_URLS[company.id] || company.logoUrl,
 }) => {
   const formattedDni = formatDniWithDots(formData.dni);
-  const tieneTextoAdicional = Boolean(formData.textoAdicional && formData.textoAdicional.trim());
 
   return (
     <Document
@@ -182,14 +181,9 @@ export const ActaPdfDocument: React.FC<ActaPdfDocumentProps> = ({
           <Text style={styles.titleText}>ACTA DE DESISTIMIENTO</Text>
         </View>
 
-        {/* Cuerpo Principal Transcrito Idéntico con Campos en Negrita y Texto Adicional al final del párrafo */}
+        {/* Cuerpo Principal Transcrito Idéntico con Campos en Negrita y Párrafo Adicional intercalado */}
         <Text style={styles.bodyParagraph}>
           {renderBoldBodyText(template.bodyTemplate, formData)}
-          {tieneTextoAdicional && (
-            <Text style={{ fontFamily: 'Helvetica' }}>
-              {` ${formData.textoAdicional!.trim()}`}
-            </Text>
-          )}
         </Text>
 
         {/* Nota de Validez Legal */}
