@@ -1,16 +1,18 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Upload, Trash2, ArrowUp, ArrowDown, Image as ImageIcon, FileCheck, Sliders, Clipboard, ClipboardCheck } from 'lucide-react';
+import { Upload, Trash2, ArrowUp, ArrowDown, Image as ImageIcon, FileCheck, Sliders, Clipboard, ClipboardCheck, IdCard, Map } from 'lucide-react';
 import type { ImageAttachment } from '../../types/acta';
 import { ImageEditorModal } from './ImageEditorModal';
 
 interface ImageUploaderProps {
   attachments: ImageAttachment[];
   onAttachmentsChange: (attachments: ImageAttachment[]) => void;
+  showCroquisOption?: boolean;
 }
 
 export const ImageUploader: React.FC<ImageUploaderProps> = ({
   attachments,
   onAttachmentsChange,
+  showCroquisOption = true,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -42,6 +44,8 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
             type: file.type || 'image/png',
             dataUrl: dataUrl,
             previewUrl: dataUrl,
+            isDni: attachments.length === 0 && idx === 0, // Auto-marcar primera foto como DNI si no hay nada
+            isCroquis: false,
           });
         };
         reader.readAsDataURL(file);
@@ -58,7 +62,6 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     });
   };
 
-  // Interceptar evento Paste (Ctrl + V / Cmd + V)
   useEffect(() => {
     const handlePaste = (e: ClipboardEvent) => {
       const items = e.clipboardData?.items;
@@ -92,9 +95,8 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     };
   }, [attachments]);
 
-  // Handler para el botón explícito de "Pegar desde Portapapeles"
   const handlePasteFromClipboardButton = async (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evitar disparar el click del file input
+    e.stopPropagation();
     setPasteFeedback(null);
 
     try {
@@ -128,7 +130,6 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       console.warn('Lectura directa del portapapeles no permitida o restringida:', err);
     }
 
-    // Si el navegador bloquea la lectura silenciosa por seguridad, avisar amigablemente al usuario
     setPasteFeedback('Presiona Ctrl + V en tu teclado para pegar la imagen copiada.');
     setTimeout(() => setPasteFeedback(null), 4000);
   };
@@ -171,6 +172,39 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     onAttachmentsChange(updated);
   };
 
+  // Mutuamente excluyentes: si se selecciona isDni, desmarcar isCroquis y viceversa
+  const toggleDni = (id: string) => {
+    onAttachmentsChange(
+      attachments.map(item => {
+        if (item.id === id) {
+          const nextDniState = !item.isDni;
+          return {
+            ...item,
+            isDni: nextDniState,
+            isCroquis: nextDniState ? false : item.isCroquis,
+          };
+        }
+        return item;
+      })
+    );
+  };
+
+  const toggleCroquis = (id: string) => {
+    onAttachmentsChange(
+      attachments.map(item => {
+        if (item.id === id) {
+          const nextCroquisState = !item.isCroquis;
+          return {
+            ...item,
+            isCroquis: nextCroquisState,
+            isDni: nextCroquisState ? false : item.isDni,
+          };
+        }
+        return item;
+      })
+    );
+  };
+
   const handleSaveEditedAttachment = (updated: ImageAttachment) => {
     onAttachmentsChange(
       attachments.map(item => (item.id === updated.id ? updated : item))
@@ -188,7 +222,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       <div className="flex items-center justify-between">
         <label className="block text-sm font-bold text-slate-800 flex items-center gap-2">
           <ImageIcon className="w-4 h-4 text-verax-red" />
-          Anexos Documentales (DNI, Fotos, Certificados)
+          Anexos Documentales (DNI, Croquis, Evidencias)
           {attachments.length > 0 && (
             <span className="ml-2 px-2 py-0.5 text-xs font-semibold bg-slate-100 text-verax-blue rounded-full border border-slate-200">
               {attachments.length} archivo{attachments.length > 1 ? 's' : ''}
@@ -197,7 +231,6 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
         </label>
 
         <div className="flex items-center gap-2">
-          {/* Botón explícito para pegar desde el portapapeles */}
           <button
             type="button"
             onClick={handlePasteFromClipboardButton}
@@ -220,7 +253,6 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
         </div>
       </div>
 
-      {/* Alerta de Feedback de Pegado */}
       {pasteFeedback && (
         <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs font-medium flex items-center gap-2 animate-fadeIn">
           <Clipboard className="w-4 h-4 text-amber-600 flex-shrink-0" />
@@ -228,7 +260,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
         </div>
       )}
 
-      {/* Zona Drag & Drop + Botón de Pegar */}
+      {/* Zona Drag & Drop */}
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -255,10 +287,10 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           </div>
           <div>
             <p className="text-sm font-semibold text-slate-700">
-              {isProcessing ? 'Procesando imagen...' : 'Arrastra imágenes o haz clic aquí'}
+              {isProcessing ? 'Procesando imagen...' : 'Arrastra imágenes de DNI/Croquis o haz clic'}
             </p>
             <p className="text-xs text-slate-500 mt-0.5">
-              O usa el botón <span className="font-semibold text-verax-blue">"Pegar Imagen Copiada"</span> superior o presiona <kbd className="px-1.5 py-0.5 bg-slate-200 text-slate-800 font-mono text-[10px] rounded border border-slate-300 font-bold">Ctrl + V</kbd>
+              O usa el botón <span className="font-semibold text-verax-blue">"Pegar Imagen Copiada"</span> o presiona <kbd className="px-1.5 py-0.5 bg-slate-200 text-slate-800 font-mono text-[10px] rounded border border-slate-300 font-bold">Ctrl + V</kbd>
             </p>
           </div>
 
@@ -273,83 +305,121 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
         </div>
       </div>
 
-      {/* Lista de Imágenes Adjuntas */}
+      {/* Lista de Imágenes Adjuntas con Toggles Mutuamente Excluyentes */}
       {attachments.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+        <div className="space-y-3 mt-3">
           {attachments.map((item, index) => (
             <div
               key={item.id}
-              className="flex items-center gap-3 p-2.5 bg-white border border-slate-200 rounded-lg shadow-sm hover:border-slate-300 transition"
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-slate-300 transition"
             >
-              <div className="relative w-14 h-14 bg-slate-100 rounded-md overflow-hidden flex-shrink-0 border border-slate-200">
-                <img
-                  src={item.previewUrl}
-                  alt={item.name}
-                  className="w-full h-full object-cover"
-                />
-                <span className="absolute bottom-0 right-0 bg-verax-blue text-white text-[10px] font-bold px-1 rounded-tl">
-                  #{index + 1}
-                </span>
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-slate-800 truncate" title={item.name}>
-                  {item.name}
-                </p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[11px] text-slate-500 flex items-center gap-1">
-                    <FileCheck className="w-3 h-3 text-verax-blue" />
-                    {formatFileSize(item.size)}
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="relative w-14 h-14 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 border border-slate-200">
+                  <img
+                    src={item.previewUrl}
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <span className="absolute bottom-0 right-0 bg-verax-blue text-white text-[10px] font-bold px-1 rounded-tl">
+                    #{index + 1}
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => setEditingAttachment(item)}
-                    className="inline-flex items-center gap-1 text-[11px] font-bold text-verax-red hover:underline"
-                    title="Editar brillo, contraste, rotación y encuadre"
-                  >
-                    <Sliders className="w-3 h-3" />
-                    Editar
-                  </button>
+                </div>
+
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-slate-800 truncate" title={item.name}>
+                    {item.name}
+                  </p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-[11px] text-slate-500 flex items-center gap-1">
+                      <FileCheck className="w-3 h-3 text-verax-blue" />
+                      {formatFileSize(item.size)}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setEditingAttachment(item)}
+                      className="inline-flex items-center gap-1 text-[11px] font-bold text-verax-red hover:underline"
+                      title="Editar brillo, contraste, rotación y encuadre"
+                    >
+                      <Sliders className="w-3 h-3" />
+                      Editar
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <div className="flex flex-col gap-0.5">
+              {/* Toggles Mutuamente Excluyentes: Foto DNI vs Croquis */}
+              <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                <div className="flex items-center gap-2">
+                  {/* Toggle DNI */}
                   <button
                     type="button"
-                    disabled={index === 0}
-                    onClick={() => moveItem(index, 'up')}
-                    className="p-1 rounded text-slate-400 hover:text-verax-blue hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent"
-                    title="Mover arriba"
+                    onClick={() => toggleDni(item.id)}
+                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold border transition ${
+                      item.isDni
+                        ? 'bg-blue-50 text-verax-blue border-verax-blue ring-1 ring-verax-blue/30'
+                        : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100'
+                    }`}
+                    title="Muestra esta foto junto a la firma al pie del acta"
                   >
-                    <ArrowUp className="w-3.5 h-3.5" />
+                    <IdCard className="w-3.5 h-3.5" />
+                    {item.isDni ? 'Foto DNI ✓' : 'Es DNI'}
                   </button>
-                  <button
-                    type="button"
-                    disabled={index === attachments.length - 1}
-                    onClick={() => moveItem(index, 'down')}
-                    className="p-1 rounded text-slate-400 hover:text-verax-blue hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent"
-                    title="Mover abajo"
-                  >
-                    <ArrowDown className="w-3.5 h-3.5" />
-                  </button>
+
+                  {/* Toggle Croquis */}
+                  {showCroquisOption && (
+                    <button
+                      type="button"
+                      onClick={() => toggleCroquis(item.id)}
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold border transition ${
+                        item.isCroquis
+                          ? 'bg-rose-50 text-verax-red border-verax-red ring-1 ring-verax-red/30'
+                          : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100'
+                      }`}
+                      title="Muestra esta foto como hoja de Anexo Documental / Croquis"
+                    >
+                      <Map className="w-3.5 h-3.5" />
+                      {item.isCroquis ? 'Croquis ✓' : 'Es Croquis'}
+                    </button>
+                  )}
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => removeItem(item.id)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
-                  title="Eliminar de anexos"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <div className="flex items-center gap-0.5">
+                    <button
+                      type="button"
+                      disabled={index === 0}
+                      onClick={() => moveItem(index, 'up')}
+                      className="p-1 rounded text-slate-400 hover:text-verax-blue hover:bg-slate-100 disabled:opacity-30"
+                      title="Mover arriba"
+                    >
+                      <ArrowUp className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      disabled={index === attachments.length - 1}
+                      onClick={() => moveItem(index, 'down')}
+                      className="p-1 rounded text-slate-400 hover:text-verax-blue hover:bg-slate-100 disabled:opacity-30"
+                      title="Mover abajo"
+                    >
+                      <ArrowDown className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => removeItem(item.id)}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                    title="Eliminar"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Modal de Edición de Imagen */}
       {editingAttachment && (
         <ImageEditorModal
           attachment={editingAttachment}

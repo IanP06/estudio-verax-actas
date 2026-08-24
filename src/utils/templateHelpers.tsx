@@ -70,7 +70,7 @@ export function interpolateTemplate(rawTemplate: string, data: ActaFormData): st
 
 /**
  * Genera fragmentos React-PDF para que todos los campos completos (variables) se muestren en NEGRITA (Helvetica-Bold).
- * Inserta el párrafo adicional como un párrafo independiente ANTES del párrafo "Se suscribe bajo..."
+ * Devuelve strings planos para texto sin formato para EVITAR anidamiento excesivo de nodos <Text> en @react-pdf/renderer.
  */
 export function renderBoldBodyText(rawTemplate: string, data: ActaFormData): React.ReactNode[] {
   if (!rawTemplate) return [];
@@ -142,7 +142,7 @@ export function renderBoldBodyText(rawTemplate: string, data: ActaFormData): Rea
         </Text>
       );
     }
-    return <Text key={index}>{part}</Text>;
+    return part; // Devuelve la cadena directamente sin envolver en <Text>
   });
 }
 

@@ -18,7 +18,7 @@ export const Navbar: React.FC = () => {
               ESTUDIO VERAX
             </h1>
             <p className="text-xs text-slate-300 font-medium mt-0.5">
-              Generador Automático de Actas de Desistimiento
+              Generador Automático de Actas (Desistimientos y Declaraciones)
             </p>
           </div>
         </div>

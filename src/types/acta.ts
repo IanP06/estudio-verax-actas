@@ -8,6 +8,8 @@ export interface ImageAttachment {
   type: string;
   dataUrl: string; // Base64 image representation for react-pdf
   previewUrl: string;
+  isDni?: boolean;       // Marcado como foto de DNI del declarante/firmante
+  isCroquis?: boolean;   // Marcado como croquis ilustrativo
 }
 
 export const actaFormSchema = z.object({
@@ -49,8 +51,29 @@ export const actaFormSchema = z.object({
 
 export type ActaFormData = z.infer<typeof actaFormSchema>;
 
+export const declaracionFormSchema = z.object({
+  companyId: z.enum(['ANTARTIDA', 'ATM', 'PROVINCIA', 'SANCOR']),
+  condicionFirmante: z.string().min(1, 'Seleccione la condición del firmante'),
+  numeroSiniestro: z.string().min(1, 'El número de siniestro es obligatorio'),
+  numeroPoliza: z.string().min(1, 'El número de póliza es obligatorio'),
+  numeroReferencia: z.string().optional(),
+  numeroJuicio: z.string().optional(),
+  nombreCompleto: z.string().min(3, 'Ingrese el nombre completo'),
+  nacionalidad: z.string().min(2, 'Ingrese la nacionalidad'),
+  dni: z.string().min(6, 'Ingrese un DNI válido'),
+  domicilioCalle: z.string().min(2, 'Ingrese la calle y número'),
+  domicilioLocalidad: z.string().min(2, 'Ingrese la localidad'),
+  domicilioProvincia: z.string().min(2, 'Ingrese la provincia'),
+  textoDeclaracion: z.string().min(10, 'Ingrese el cuerpo del testimonio/declaración'),
+  email: z.string().email('Ingrese un e-mail válido para Adobe Sign'),
+});
+
+export type DeclaracionFormData = z.infer<typeof declaracionFormSchema>;
+
 export interface ActaAppState {
+  activeTab: 'DESISTIMIENTO' | 'DECLARACION';
   formData: ActaFormData;
+  declaracionData: DeclaracionFormData;
   attachments: ImageAttachment[];
   selectedCompany: Company;
   selectedTemplate: DocumentTemplate;
