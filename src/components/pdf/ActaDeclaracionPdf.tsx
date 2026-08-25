@@ -117,7 +117,12 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
 
-  // Foto DNI junto al campo de firma
+  // Foto DNI del módulo dedicado de DNI junto al campo de firma
+  dniFooterRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 10,
+  },
   dniCard: {
     width: 180,
     height: 105,
@@ -126,7 +131,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 3,
     backgroundColor: '#FFFFFF',
-    marginBottom: 10,
   },
   dniImage: {
     width: '100%',
@@ -179,7 +183,8 @@ const styles = StyleSheet.create({
 
 interface ActaDeclaracionPdfProps {
   formData: DeclaracionFormData;
-  attachments: ImageAttachment[];
+  dniAttachments: ImageAttachment[];
+  annexAttachments: ImageAttachment[];
   company: Company;
   veraxLogoUrl?: string;
   companyLogoUrl?: string;
@@ -187,17 +192,16 @@ interface ActaDeclaracionPdfProps {
 
 export const ActaDeclaracionPdf: React.FC<ActaDeclaracionPdfProps> = ({
   formData,
-  attachments,
+  dniAttachments,
+  annexAttachments,
   company,
   veraxLogoUrl = LOGO_DATA_URLS.VERAX || LOGO_DATA_URLS.ESTUDIO_VERAX || '/assets/logos/estudio_verax.png',
   companyLogoUrl = LOGO_DATA_URLS[company.id] || company.logoUrl,
 }) => {
-  // 1. Filtrado de imágenes: DNI va junto a la firma; Croquis / Anexos van a hojas subsiguientes
-  const dniAttachment = attachments.find(att => att.isDni);
-  const annexAttachments = attachments.filter(att => att.isCroquis || (!att.isDni && !att.isCroquis));
-  const hasCroquis = attachments.some(att => att.isCroquis);
+  // Si hay imágenes en el módulo de anexos, activar la cláusula de croquis
+  const hasCroquis = annexAttachments.length > 0;
 
-  // 2. Obtener la plantilla con tokens {{TOKEN}}
+  // Obtener la plantilla con tokens {{TOKEN}}
   const rawTemplate = buildDeclaracionLegalTemplate({
     companyId: formData.companyId,
     condicionFirmante: formData.condicionFirmante,
@@ -206,7 +210,7 @@ export const ActaDeclaracionPdf: React.FC<ActaDeclaracionPdfProps> = ({
     numeroReferencia: formData.numeroReferencia,
     numeroJuicio: formData.numeroJuicio,
     nombreCompleto: formData.nombreCompleto,
-    nacionalidad: formData.nacionalidad,
+    nacionalidad: formData.nacionalidad || '',
     dni: formatDniWithDots(formData.dni),
     domicilioCalle: formData.domicilioCalle,
     domicilioLocalidad: formData.domicilioLocalidad,
@@ -219,7 +223,6 @@ export const ActaDeclaracionPdf: React.FC<ActaDeclaracionPdfProps> = ({
   const formattedDni = formatDniWithDots(formData.dni);
   const companyLegalName = COMPANY_LEGAL_NAMES[formData.companyId] || COMPANY_LEGAL_NAMES.ANTARTIDA;
 
-  // 3. Función auxiliar para obtener el valor del placeholder
   const getVarValue = (varName: string): string => {
     switch (varName) {
       case 'CONDICION_FIRMANTE':
@@ -276,8 +279,7 @@ export const ActaDeclaracionPdf: React.FC<ActaDeclaracionPdfProps> = ({
           <Text style={styles.titleText}>ACTA DE DECLARACIÓN</Text>
         </View>
 
-        {/* Cuerpo Legal Verbatim con Placeholders: TEXTO_DECLARACION en CURSIVA.
-            Devuelve cadenas directamente para cadenas sin formato (evita bugs de anidamiento de nodos <Text> en @react-pdf). */}
+        {/* Cuerpo Legal Verbatim con Placeholders: TEXTO_DECLARACION en CURSIVA */}
         <Text style={styles.bodyParagraph}>
           {parts.map((part, index) => {
             const match = part.match(/^{{([A-Z_]+)}}$/);
@@ -296,13 +298,13 @@ export const ActaDeclaracionPdf: React.FC<ActaDeclaracionPdfProps> = ({
                 </Text>
               );
             }
-            return part; // Devuelve la cadena directamente
+            return part;
           })}
         </Text>
 
-        {/* Bloque final de firma y nota legal envueltos juntos */}
+        {/* Bloque final de firma, fotos de DNI y nota legal */}
         <View wrap={false}>
-          {/* Nota de Validez Legal (Idéntica al Acta de Desistimiento) */}
+          {/* Nota de Validez Legal */}
           <View style={styles.legalNote}>
             <Text>
               El presente instrumento privado se suscribe con plena conformidad y alcance legal, 
@@ -310,14 +312,18 @@ export const ActaDeclaracionPdf: React.FC<ActaDeclaracionPdfProps> = ({
             </Text>
           </View>
 
-          {/* Foto DNI junto a la firma si fue adjuntada y marcada como DNI */}
-          {dniAttachment && (
-            <View style={styles.dniCard}>
-              <Image src={dniAttachment.dataUrl} style={styles.dniImage} />
+          {/* Fotos del Módulo Dedicado de DNI al pie junto a la firma */}
+          {dniAttachments.length > 0 && (
+            <View style={styles.dniFooterRow}>
+              {dniAttachments.slice(0, 2).map((att, idx) => (
+                <View key={att.id || idx} style={styles.dniCard}>
+                  <Image src={att.dataUrl} style={styles.dniImage} />
+                </View>
+              ))}
             </View>
           )}
 
-          {/* Bloque de Firma (Idéntico al Acta de Desistimiento) */}
+          {/* Bloque de Firma */}
           <View style={styles.signatureSection}>
             <View style={styles.signatureBox}>
               <View style={styles.signatureLine} />
@@ -329,7 +335,7 @@ export const ActaDeclaracionPdf: React.FC<ActaDeclaracionPdfProps> = ({
         </View>
       </Page>
 
-      {/* PÁGINAS SUBSIGUIENTES DE ANEXOS Y CROQUIS */}
+      {/* PÁGINAS SUBSIGUIENTES DE ANEXOS Y CROQUIS DESDE EL MÓDULO DEDICADO DE ANEXOS */}
       {annexAttachments.length > 0 && (
         <Page size="A4" style={styles.page}>
           <View style={styles.headerContainer}>
@@ -348,7 +354,7 @@ export const ActaDeclaracionPdf: React.FC<ActaDeclaracionPdfProps> = ({
               <View key={att.id || idx} style={styles.annexCard} wrap={false}>
                 <Image src={att.dataUrl} style={styles.annexImage} />
                 <Text style={styles.annexCaption}>
-                  {att.isCroquis ? `CROQUIS ILUSTRATIVO #${idx + 1}` : `ANEXO DOCUMENTAL #${idx + 1}`} - {att.name}
+                  ANEXO DOCUMENTAL / CROQUIS #{idx + 1} - {att.name}
                 </Text>
               </View>
             ))}

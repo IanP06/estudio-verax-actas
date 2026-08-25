@@ -8,7 +8,7 @@ import { COMPANIES, ACTA_TEMPLATES } from './config/templates';
 import { CONDICIONES_FIRMANTE } from './config/templateDeclaracion';
 import type { Company, DocumentTemplate } from './config/templates';
 import type { ActaFormData, DeclaracionFormData, ImageAttachment } from './types/acta';
-import { FileText, FileCheck2 } from 'lucide-react';
+import { FileText, FileCheck2, IdCard, Map } from 'lucide-react';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<'DESISTIMIENTO' | 'DECLARACION'>('DESISTIMIENTO');
@@ -41,7 +41,7 @@ export function App() {
     fechaEmision: today,
   });
 
-  // Estado para Actas de Declaración (nacionalidad vacía por defecto)
+  // Estado para Actas de Declaración
   const [declaracionData, setDeclaracionData] = useState<DeclaracionFormData>({
     companyId: 'ANTARTIDA',
     condicionFirmante: CONDICIONES_FIRMANTE[0],
@@ -59,7 +59,9 @@ export function App() {
     email: '',
   });
 
-  const [attachments, setAttachments] = useState<ImageAttachment[]>([]);
+  // Módulos independientes de carga de imágenes
+  const [dniAttachments, setDniAttachments] = useState<ImageAttachment[]>([]);
+  const [annexAttachments, setAnnexAttachments] = useState<ImageAttachment[]>([]);
 
   const handleCompanySelect = (companyId: Company['id']) => {
     const foundCompany = COMPANIES.find(c => c.id === companyId) || COMPANIES[0];
@@ -79,9 +81,9 @@ export function App() {
       <Navbar />
 
       <main className="flex-1 max-w-[1800px] w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* COLUMNA IZQUIERDA: Tab Switcher, Formulario Adaptativo y Anexos */}
+        {/* COLUMNA IZQUIERDA: Tab Switcher, Formulario y Módulos Independientes de Carga */}
         <div className="lg:col-span-6 xl:col-span-5 space-y-6">
-          {/* TAB SWITCHER PRINCIPAL DE UX/UI */}
+          {/* TAB SWITCHER PRINCIPAL */}
           <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm grid grid-cols-2 gap-2">
             <button
               type="button"
@@ -129,12 +131,26 @@ export function App() {
             />
           )}
 
-          {/* Módulo de Anexos Documentales */}
+          {/* MÓDULO 1 DE CARGA DEDICADA: Foto de DNI del Declarante */}
           <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
             <ImageUploader
-              attachments={attachments}
-              onAttachmentsChange={setAttachments}
-              showCroquisOption={activeTab === 'DECLARACION'}
+              title="Foto de DNI del Declarante / Firmante"
+              subtitle="Se adjuntará al pie del acta junto al campo de firma"
+              attachments={dniAttachments}
+              onAttachmentsChange={setDniAttachments}
+              maxFiles={2}
+              icon={<IdCard className="w-4 h-4 text-verax-red" />}
+            />
+          </div>
+
+          {/* MÓDULO 2 DE CARGA DEDICADA: Anexos Documentales / Croquis / Evidencias */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <ImageUploader
+              title="Anexos Documentales / Croquis / Evidencias"
+              subtitle="Se adjuntarán en hojas adicionales al final del PDF"
+              attachments={annexAttachments}
+              onAttachmentsChange={setAnnexAttachments}
+              icon={<Map className="w-4 h-4 text-verax-red" />}
             />
           </div>
         </div>
@@ -145,7 +161,8 @@ export function App() {
             activeTab={activeTab}
             formData={formData}
             declaracionData={declaracionData}
-            attachments={attachments}
+            dniAttachments={dniAttachments}
+            annexAttachments={annexAttachments}
             selectedCompany={selectedCompany}
             selectedTemplate={selectedTemplate}
           />

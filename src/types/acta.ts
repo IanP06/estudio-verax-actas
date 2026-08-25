@@ -8,8 +8,6 @@ export interface ImageAttachment {
   type: string;
   dataUrl: string; // Base64 image representation for react-pdf
   previewUrl: string;
-  isDni?: boolean;       // Marcado como foto de DNI del declarante/firmante
-  isCroquis?: boolean;   // Marcado como croquis ilustrativo
 }
 
 export const actaFormSchema = z.object({
@@ -59,7 +57,7 @@ export const declaracionFormSchema = z.object({
   numeroReferencia: z.string().optional(),
   numeroJuicio: z.string().optional(),
   nombreCompleto: z.string().min(3, 'Ingrese el nombre completo'),
-  nacionalidad: z.string().min(2, 'Ingrese la nacionalidad'),
+  nacionalidad: z.string().optional(),
   dni: z.string().min(6, 'Ingrese un DNI válido'),
   domicilioCalle: z.string().min(2, 'Ingrese la calle y número'),
   domicilioLocalidad: z.string().min(2, 'Ingrese la localidad'),
@@ -74,7 +72,8 @@ export interface ActaAppState {
   activeTab: 'DESISTIMIENTO' | 'DECLARACION';
   formData: ActaFormData;
   declaracionData: DeclaracionFormData;
-  attachments: ImageAttachment[];
+  dniAttachments: ImageAttachment[];
+  annexAttachments: ImageAttachment[];
   selectedCompany: Company;
   selectedTemplate: DocumentTemplate;
 }

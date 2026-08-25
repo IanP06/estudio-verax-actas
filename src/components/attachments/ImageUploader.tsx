@@ -1,18 +1,24 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Upload, Trash2, ArrowUp, ArrowDown, Image as ImageIcon, FileCheck, Sliders, Clipboard, ClipboardCheck, IdCard, Map } from 'lucide-react';
+import { Upload, Trash2, ArrowUp, ArrowDown, Image as ImageIcon, FileCheck, Sliders, Clipboard, ClipboardCheck } from 'lucide-react';
 import type { ImageAttachment } from '../../types/acta';
 import { ImageEditorModal } from './ImageEditorModal';
 
 interface ImageUploaderProps {
+  title?: string;
+  subtitle?: string;
   attachments: ImageAttachment[];
   onAttachmentsChange: (attachments: ImageAttachment[]) => void;
-  showCroquisOption?: boolean;
+  maxFiles?: number;
+  icon?: React.ReactNode;
 }
 
 export const ImageUploader: React.FC<ImageUploaderProps> = ({
+  title = 'Anexos Documentales',
+  subtitle,
   attachments,
   onAttachmentsChange,
-  showCroquisOption = true,
+  maxFiles,
+  icon = <ImageIcon className="w-4 h-4 text-verax-red" />,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -22,9 +28,14 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   const processFiles = (files: FileList | File[]) => {
     setIsProcessing(true);
-    const validFiles = Array.from(files).filter(file =>
+    let validFiles = Array.from(files).filter(file =>
       file.type.startsWith('image/')
     );
+
+    if (maxFiles && attachments.length + validFiles.length > maxFiles) {
+      const allowedCount = Math.max(0, maxFiles - attachments.length);
+      validFiles = validFiles.slice(0, allowedCount);
+    }
 
     if (validFiles.length === 0) {
       setIsProcessing(false);
@@ -44,8 +55,6 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
             type: file.type || 'image/png',
             dataUrl: dataUrl,
             previewUrl: dataUrl,
-            isDni: attachments.length === 0 && idx === 0, // Auto-marcar primera foto como DNI si no hay nada
-            isCroquis: false,
           });
         };
         reader.readAsDataURL(file);
@@ -64,6 +73,12 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   useEffect(() => {
     const handlePaste = (e: ClipboardEvent) => {
+      // Si el elemento activo está en otro input/textarea, permitimos pegar solo si no es texto plano
+      const activeElement = document.activeElement;
+      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+        return;
+      }
+
       const items = e.clipboardData?.items;
       if (!items) return;
 
@@ -93,7 +108,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     return () => {
       window.removeEventListener('paste', handlePaste);
     };
-  }, [attachments]);
+  }, [attachments, maxFiles]);
 
   const handlePasteFromClipboardButton = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -172,39 +187,6 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     onAttachmentsChange(updated);
   };
 
-  // Mutuamente excluyentes: si se selecciona isDni, desmarcar isCroquis y viceversa
-  const toggleDni = (id: string) => {
-    onAttachmentsChange(
-      attachments.map(item => {
-        if (item.id === id) {
-          const nextDniState = !item.isDni;
-          return {
-            ...item,
-            isDni: nextDniState,
-            isCroquis: nextDniState ? false : item.isCroquis,
-          };
-        }
-        return item;
-      })
-    );
-  };
-
-  const toggleCroquis = (id: string) => {
-    onAttachmentsChange(
-      attachments.map(item => {
-        if (item.id === id) {
-          const nextCroquisState = !item.isCroquis;
-          return {
-            ...item,
-            isCroquis: nextCroquisState,
-            isDni: nextCroquisState ? false : item.isDni,
-          };
-        }
-        return item;
-      })
-    );
-  };
-
   const handleSaveEditedAttachment = (updated: ImageAttachment) => {
     onAttachmentsChange(
       attachments.map(item => (item.id === updated.id ? updated : item))
@@ -217,29 +199,38 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
+  const isMaxReached = maxFiles ? attachments.length >= maxFiles : false;
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <label className="block text-sm font-bold text-slate-800 flex items-center gap-2">
-          <ImageIcon className="w-4 h-4 text-verax-red" />
-          Anexos Documentales (DNI, Croquis, Evidencias)
-          {attachments.length > 0 && (
-            <span className="ml-2 px-2 py-0.5 text-xs font-semibold bg-slate-100 text-verax-blue rounded-full border border-slate-200">
-              {attachments.length} archivo{attachments.length > 1 ? 's' : ''}
-            </span>
+        <div>
+          <label className="block text-sm font-bold text-slate-800 flex items-center gap-2">
+            {icon}
+            {title}
+            {attachments.length > 0 && (
+              <span className="ml-2 px-2 py-0.5 text-xs font-semibold bg-slate-100 text-verax-blue rounded-full border border-slate-200">
+                {attachments.length} {maxFiles ? `/ ${maxFiles}` : ''}
+              </span>
+            )}
+          </label>
+          {subtitle && (
+            <p className="text-xs text-slate-500 mt-0.5 font-medium">{subtitle}</p>
           )}
-        </label>
+        </div>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handlePasteFromClipboardButton}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-verax-blue hover:bg-slate-800 rounded-lg shadow-sm transition"
-            title="Pegar imagen copiada en el portapapeles"
-          >
-            <ClipboardCheck className="w-3.5 h-3.5 text-verax-red" />
-            Pegar Imagen Copiada
-          </button>
+          {!isMaxReached && (
+            <button
+              type="button"
+              onClick={handlePasteFromClipboardButton}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-verax-blue hover:bg-slate-800 rounded-lg shadow-sm transition"
+              title="Pegar imagen copiada en el portapapeles"
+            >
+              <ClipboardCheck className="w-3.5 h-3.5 text-verax-red" />
+              Pegar Imagen
+            </button>
+          )}
 
           {attachments.length > 0 && (
             <button
@@ -247,7 +238,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
               onClick={() => onAttachmentsChange([])}
               className="text-xs text-rose-600 hover:text-rose-800 font-medium transition"
             >
-              Quitar todos
+              Quitar todo
             </button>
           )}
         </div>
@@ -261,66 +252,59 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       )}
 
       {/* Zona Drag & Drop */}
-      <div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
-        className={`border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-all ${
-          isDragging
-            ? 'border-verax-red bg-rose-50/50 scale-[0.99]'
-            : 'border-slate-300 hover:border-verax-blue bg-slate-50/50 hover:bg-white'
-        }`}
-      >
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleFileSelect}
-          className="hidden"
-        />
+      {!isMaxReached && (
+        <div
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+          className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all ${
+            isDragging
+              ? 'border-verax-red bg-rose-50/50 scale-[0.99]'
+              : 'border-slate-300 hover:border-verax-blue bg-slate-50/50 hover:bg-white'
+          }`}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple={!maxFiles || maxFiles > 1}
+            onChange={handleFileSelect}
+            className="hidden"
+          />
 
-        <div className="flex flex-col items-center justify-center gap-2">
-          <div className="w-10 h-10 rounded-full bg-slate-100 text-verax-blue flex items-center justify-center border border-slate-200">
-            <Upload className="w-5 h-5 text-verax-blue" />
+          <div className="flex flex-col items-center justify-center gap-1.5">
+            <div className="w-9 h-9 rounded-full bg-slate-100 text-verax-blue flex items-center justify-center border border-slate-200">
+              <Upload className="w-4 h-4 text-verax-blue" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-700">
+                {isProcessing ? 'Procesando imagen...' : 'Arrastra imágenes aquí o haz clic para examinar'}
+              </p>
+              <p className="text-[11px] text-slate-500 mt-0.5">
+                O presiona <kbd className="px-1.5 py-0.5 bg-slate-200 text-slate-800 font-mono text-[10px] rounded border border-slate-300 font-bold">Ctrl + V</kbd> para pegar
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-semibold text-slate-700">
-              {isProcessing ? 'Procesando imagen...' : 'Arrastra imágenes de DNI/Croquis o haz clic'}
-            </p>
-            <p className="text-xs text-slate-500 mt-0.5">
-              O usa el botón <span className="font-semibold text-verax-blue">"Pegar Imagen Copiada"</span> o presiona <kbd className="px-1.5 py-0.5 bg-slate-200 text-slate-800 font-mono text-[10px] rounded border border-slate-300 font-bold">Ctrl + V</kbd>
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={handlePasteFromClipboardButton}
-            className="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 text-verax-blue text-xs font-bold rounded-lg border border-slate-300 shadow-sm transition"
-          >
-            <Clipboard className="w-3.5 h-3.5 text-verax-red" />
-            Pegar desde Portapapeles
-          </button>
         </div>
-      </div>
+      )}
 
-      {/* Lista de Imágenes Adjuntas con Toggles Mutuamente Excluyentes */}
+      {/* Lista de Imágenes Adjuntas Limpia Sin Botones de Toggle */}
       {attachments.length > 0 && (
-        <div className="space-y-3 mt-3">
+        <div className="space-y-2.5 mt-2">
           {attachments.map((item, index) => (
             <div
               key={item.id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-slate-300 transition"
+              className="flex items-center justify-between gap-3 p-2.5 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-slate-300 transition"
             >
               <div className="flex items-center gap-3 min-w-0">
-                <div className="relative w-14 h-14 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 border border-slate-200">
+                <div className="relative w-12 h-12 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 border border-slate-200">
                   <img
                     src={item.previewUrl}
                     alt={item.name}
                     className="w-full h-full object-cover"
                   />
-                  <span className="absolute bottom-0 right-0 bg-verax-blue text-white text-[10px] font-bold px-1 rounded-tl">
+                  <span className="absolute bottom-0 right-0 bg-verax-blue text-white text-[9px] font-bold px-1 rounded-tl">
                     #{index + 1}
                   </span>
                 </div>
@@ -347,73 +331,36 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
                 </div>
               </div>
 
-              {/* Toggles Mutuamente Excluyentes: Foto DNI vs Croquis */}
-              <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                <div className="flex items-center gap-2">
-                  {/* Toggle DNI */}
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <div className="flex items-center gap-0.5">
                   <button
                     type="button"
-                    onClick={() => toggleDni(item.id)}
-                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold border transition ${
-                      item.isDni
-                        ? 'bg-blue-50 text-verax-blue border-verax-blue ring-1 ring-verax-blue/30'
-                        : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100'
-                    }`}
-                    title="Muestra esta foto junto a la firma al pie del acta"
+                    disabled={index === 0}
+                    onClick={() => moveItem(index, 'up')}
+                    className="p-1 rounded text-slate-400 hover:text-verax-blue hover:bg-slate-100 disabled:opacity-30"
+                    title="Mover arriba"
                   >
-                    <IdCard className="w-3.5 h-3.5" />
-                    {item.isDni ? 'Foto DNI ✓' : 'Es DNI'}
+                    <ArrowUp className="w-3.5 h-3.5" />
                   </button>
-
-                  {/* Toggle Croquis */}
-                  {showCroquisOption && (
-                    <button
-                      type="button"
-                      onClick={() => toggleCroquis(item.id)}
-                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold border transition ${
-                        item.isCroquis
-                          ? 'bg-rose-50 text-verax-red border-verax-red ring-1 ring-verax-red/30'
-                          : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100'
-                      }`}
-                      title="Muestra esta foto como hoja de Anexo Documental / Croquis"
-                    >
-                      <Map className="w-3.5 h-3.5" />
-                      {item.isCroquis ? 'Croquis ✓' : 'Es Croquis'}
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <div className="flex items-center gap-0.5">
-                    <button
-                      type="button"
-                      disabled={index === 0}
-                      onClick={() => moveItem(index, 'up')}
-                      className="p-1 rounded text-slate-400 hover:text-verax-blue hover:bg-slate-100 disabled:opacity-30"
-                      title="Mover arriba"
-                    >
-                      <ArrowUp className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      disabled={index === attachments.length - 1}
-                      onClick={() => moveItem(index, 'down')}
-                      className="p-1 rounded text-slate-400 hover:text-verax-blue hover:bg-slate-100 disabled:opacity-30"
-                      title="Mover abajo"
-                    >
-                      <ArrowDown className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-
                   <button
                     type="button"
-                    onClick={() => removeItem(item.id)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
-                    title="Eliminar"
+                    disabled={index === attachments.length - 1}
+                    onClick={() => moveItem(index, 'down')}
+                    className="p-1 rounded text-slate-400 hover:text-verax-blue hover:bg-slate-100 disabled:opacity-30"
+                    title="Mover abajo"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <ArrowDown className="w-3.5 h-3.5" />
                   </button>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => removeItem(item.id)}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                  title="Eliminar"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             </div>
           ))}

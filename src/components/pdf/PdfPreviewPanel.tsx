@@ -10,7 +10,8 @@ interface PdfPreviewPanelProps {
   activeTab: 'DESISTIMIENTO' | 'DECLARACION';
   formData: ActaFormData;
   declaracionData: DeclaracionFormData;
-  attachments: ImageAttachment[];
+  dniAttachments: ImageAttachment[];
+  annexAttachments: ImageAttachment[];
   selectedCompany: Company;
   selectedTemplate: DocumentTemplate;
 }
@@ -19,7 +20,8 @@ export const PdfPreviewPanel: React.FC<PdfPreviewPanelProps> = ({
   activeTab,
   formData,
   declaracionData,
-  attachments,
+  dniAttachments,
+  annexAttachments,
   selectedCompany,
   selectedTemplate,
 }) => {
@@ -28,13 +30,14 @@ export const PdfPreviewPanel: React.FC<PdfPreviewPanelProps> = ({
   const currentDocument = isDeclaracion ? (
     <ActaDeclaracionPdf
       formData={declaracionData}
-      attachments={attachments}
+      dniAttachments={dniAttachments}
+      annexAttachments={annexAttachments}
       company={selectedCompany}
     />
   ) : (
     <ActaPdfDocument
       formData={formData}
-      attachments={attachments}
+      attachments={[...dniAttachments, ...annexAttachments]}
       company={selectedCompany}
       template={selectedTemplate}
     />
@@ -60,7 +63,7 @@ export const PdfPreviewPanel: React.FC<PdfPreviewPanelProps> = ({
           </div>
         </div>
 
-        {/* Único Botón de Descarga Directa del PDF (Header) */}
+        {/* Único Botón de Descarga Directa del PDF */}
         <PDFDownloadLink
           document={currentDocument}
           fileName={downloadFileName}
