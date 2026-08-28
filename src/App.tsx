@@ -2,16 +2,17 @@ import { useState } from 'react';
 import { Navbar } from './components/layout/Navbar';
 import { ActaForm } from './components/forms/ActaForm';
 import { DeclaracionForm } from './components/forms/DeclaracionForm';
+import { SolicitudInformeForm } from './components/forms/SolicitudInformeForm';
 import { ImageUploader } from './components/attachments/ImageUploader';
 import { PdfPreviewPanel } from './components/pdf/PdfPreviewPanel';
 import { COMPANIES, ACTA_TEMPLATES } from './config/templates';
 import { CONDICIONES_FIRMANTE } from './config/templateDeclaracion';
 import type { Company, DocumentTemplate } from './config/templates';
-import type { ActaFormData, DeclaracionFormData, ImageAttachment } from './types/acta';
-import { FileText, FileCheck2, IdCard, Map } from 'lucide-react';
+import type { ActaFormData, DeclaracionFormData, SolicitudInformeFormData, ImageAttachment } from './types/acta';
+import { FileText, FileCheck2, ClipboardList, IdCard, Map } from 'lucide-react';
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<'DESISTIMIENTO' | 'DECLARACION'>('DESISTIMIENTO');
+  const [activeTab, setActiveTab] = useState<'DESISTIMIENTO' | 'DECLARACION' | 'SOLICITUD'>('DESISTIMIENTO');
 
   const [selectedCompany, setSelectedCompany] = useState<Company>(COMPANIES[0]);
   const [selectedTemplate, setSelectedTemplate] = useState<DocumentTemplate>(ACTA_TEMPLATES[0]);
@@ -59,6 +60,15 @@ export function App() {
     email: '',
   });
 
+  // Estado para Solicitudes de Informe (Tab 3)
+  const [solicitudData, setSolicitudData] = useState<SolicitudInformeFormData>({
+    companyId: 'ANTARTIDA',
+    tipoModelo: 'COLABORACION_GENERAL',
+    destinatarioInstitucion: '',
+    numeroSiniestro: '',
+    puntosSolicitud: '',
+  });
+
   // Módulos independientes de carga de imágenes
   const [dniAttachments, setDniAttachments] = useState<ImageAttachment[]>([]);
   const [annexAttachments, setAnnexAttachments] = useState<ImageAttachment[]>([]);
@@ -69,6 +79,7 @@ export function App() {
 
     setFormData(prev => ({ ...prev, companyId }));
     setDeclaracionData(prev => ({ ...prev, companyId }));
+    setSolicitudData(prev => ({ ...prev, companyId }));
   };
 
   const handleTemplateSelect = (templateId: string) => {
@@ -83,37 +94,50 @@ export function App() {
       <main className="flex-1 max-w-[1800px] w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* COLUMNA IZQUIERDA: Tab Switcher, Formulario y Módulos Independientes de Carga */}
         <div className="lg:col-span-6 xl:col-span-5 space-y-6">
-          {/* TAB SWITCHER PRINCIPAL */}
-          <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm grid grid-cols-2 gap-2">
+          {/* TAB SWITCHER PRINCIPAL (3 PESTAÑAS) */}
+          <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm grid grid-cols-3 gap-1.5 sm:gap-2">
             <button
               type="button"
               onClick={() => setActiveTab('DESISTIMIENTO')}
-              className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold transition ${
+              className={`flex items-center justify-center gap-1.5 py-2.5 px-2 text-[11px] sm:text-xs font-bold rounded-xl transition ${
                 activeTab === 'DESISTIMIENTO'
                   ? 'bg-verax-blue text-white shadow-md'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
-              <FileText className={`w-4 h-4 ${activeTab === 'DESISTIMIENTO' ? 'text-verax-red' : 'text-slate-400'}`} />
-              Acta de Desistimiento
+              <FileText className={`w-3.5 h-3.5 ${activeTab === 'DESISTIMIENTO' ? 'text-verax-red' : 'text-slate-400'}`} />
+              Desistimientos
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab('DECLARACION')}
-              className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold transition ${
+              className={`flex items-center justify-center gap-1.5 py-2.5 px-2 text-[11px] sm:text-xs font-bold rounded-xl transition ${
                 activeTab === 'DECLARACION'
                   ? 'bg-verax-blue text-white shadow-md'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
-              <FileCheck2 className={`w-4 h-4 ${activeTab === 'DECLARACION' ? 'text-verax-red' : 'text-slate-400'}`} />
-              Acta de Declaración
+              <FileCheck2 className={`w-3.5 h-3.5 ${activeTab === 'DECLARACION' ? 'text-verax-red' : 'text-slate-400'}`} />
+              Declaraciones
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('SOLICITUD')}
+              className={`flex items-center justify-center gap-1.5 py-2.5 px-2 text-[11px] sm:text-xs font-bold rounded-xl transition ${
+                activeTab === 'SOLICITUD'
+                  ? 'bg-verax-blue text-white shadow-md'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <ClipboardList className={`w-3.5 h-3.5 ${activeTab === 'SOLICITUD' ? 'text-verax-red' : 'text-slate-400'}`} />
+              Solicitudes
             </button>
           </div>
 
           {/* Formulario Activo */}
-          {activeTab === 'DESISTIMIENTO' ? (
+          {activeTab === 'DESISTIMIENTO' && (
             <ActaForm
               initialValues={formData}
               onFormChange={setFormData}
@@ -122,7 +146,9 @@ export function App() {
               onCompanySelect={handleCompanySelect}
               onTemplateSelect={handleTemplateSelect}
             />
-          ) : (
+          )}
+
+          {activeTab === 'DECLARACION' && (
             <DeclaracionForm
               initialValues={declaracionData}
               onFormChange={setDeclaracionData}
@@ -131,22 +157,33 @@ export function App() {
             />
           )}
 
-          {/* MÓDULO 1 DE CARGA DEDICADA: Foto de DNI del Declarante */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <ImageUploader
-              title="Foto de DNI del Declarante / Firmante"
-              subtitle="Se adjuntará al pie del acta junto al campo de firma"
-              attachments={dniAttachments}
-              onAttachmentsChange={setDniAttachments}
-              maxFiles={2}
-              icon={<IdCard className="w-4 h-4 text-verax-red" />}
+          {activeTab === 'SOLICITUD' && (
+            <SolicitudInformeForm
+              initialValues={solicitudData}
+              onFormChange={setSolicitudData}
+              selectedCompany={selectedCompany}
+              onCompanySelect={handleCompanySelect}
             />
-          </div>
+          )}
 
-          {/* MÓDULO 2 DE CARGA DEDICADA: Anexos Documentales / Croquis / Evidencias */}
+          {/* MÓDULO DE CARGA DNI (Sólo para Desistimientos y Declaraciones) */}
+          {activeTab !== 'SOLICITUD' && (
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+              <ImageUploader
+                title="Foto de DNI del Declarante / Firmante"
+                subtitle="Se adjuntará al pie del acta junto al campo de firma"
+                attachments={dniAttachments}
+                onAttachmentsChange={setDniAttachments}
+                maxFiles={2}
+                icon={<IdCard className="w-4 h-4 text-verax-red" />}
+              />
+            </div>
+          )}
+
+          {/* MÓDULO DE CARGA ANEXOS / EVIDENCIAS / CROQUIS (Para todos los módulos) */}
           <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
             <ImageUploader
-              title="Anexos Documentales / Croquis / Evidencias"
+              title={activeTab === 'SOLICITUD' ? "Documentos Adjuntos / Evidencias" : "Anexos Documentales / Croquis / Evidencias"}
               subtitle="Se adjuntarán en hojas adicionales al final del PDF"
               attachments={annexAttachments}
               onAttachmentsChange={setAnnexAttachments}
@@ -161,6 +198,7 @@ export function App() {
             activeTab={activeTab}
             formData={formData}
             declaracionData={declaracionData}
+            solicitudData={solicitudData}
             dniAttachments={dniAttachments}
             annexAttachments={annexAttachments}
             selectedCompany={selectedCompany}

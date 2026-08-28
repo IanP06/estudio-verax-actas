@@ -68,10 +68,29 @@ export const declaracionFormSchema = z.object({
 
 export type DeclaracionFormData = z.infer<typeof declaracionFormSchema>;
 
+export const solicitudInformeFormSchema = z.object({
+  companyId: z.enum(['ANTARTIDA', 'ATM', 'PROVINCIA', 'SANCOR']),
+  tipoModelo: z.enum(['COLABORACION_GENERAL', 'INFORME_MEDICO']),
+  destinatarioInstitucion: z.string().min(2, 'Ingrese el destinatario o la institución'),
+  numeroSiniestro: z.string().min(1, 'El número de siniestro es obligatorio'),
+  puntosSolicitud: z.string().optional(),
+
+  // Campos estructurados de Informe Médico
+  fechaAtencionPaciente: z.string().optional(),
+  nombrePaciente: z.string().optional(),
+  dniPaciente: z.string().optional(),
+  nombreProfesional: z.string().optional(),
+  matriculaProvincial: z.string().optional(),
+  matriculaNacional: z.string().optional(),
+});
+
+export type SolicitudInformeFormData = z.infer<typeof solicitudInformeFormSchema>;
+
 export interface ActaAppState {
-  activeTab: 'DESISTIMIENTO' | 'DECLARACION';
+  activeTab: 'DESISTIMIENTO' | 'DECLARACION' | 'SOLICITUD';
   formData: ActaFormData;
   declaracionData: DeclaracionFormData;
+  solicitudData: SolicitudInformeFormData;
   dniAttachments: ImageAttachment[];
   annexAttachments: ImageAttachment[];
   selectedCompany: Company;
