@@ -86,11 +86,30 @@ export const solicitudInformeFormSchema = z.object({
 
 export type SolicitudInformeFormData = z.infer<typeof solicitudInformeFormSchema>;
 
+export const retiroDenunciaFormSchema = z.object({
+  companyId: z.enum(['ANTARTIDA', 'ATM', 'PROVINCIA', 'SANCOR']),
+  numeroSiniestro: z.string().min(1, 'El número de siniestro es obligatorio'),
+  numeroPoliza: z.string().min(1, 'El número de póliza es obligatorio'),
+  fechaOcurrencia: z.string().min(1, 'Seleccione la fecha de ocurrencia'),
+  nombreCompleto: z.string().min(3, 'Ingrese el nombre completo'),
+  dni: z.string().min(6, 'Ingrese un DNI válido'),
+  domicilioCalle: z.string().min(2, 'Ingrese la calle y número'),
+  domicilioLocalidad: z.string().min(2, 'Ingrese la localidad'),
+  domicilioProvincia: z.string().min(2, 'Ingrese la provincia'),
+  email: z.string().email('Ingrese un e-mail válido'),
+  vehiculoMarca: z.string().min(1, 'Ingrese la marca del vehículo'),
+  vehiculoModelo: z.string().min(1, 'Ingrese el modelo del vehículo'),
+  vehiculoDominio: z.string().min(1, 'Ingrese el dominio del vehículo'),
+});
+
+export type RetiroDenunciaFormData = z.infer<typeof retiroDenunciaFormSchema>;
+
 export interface ActaAppState {
-  activeTab: 'DESISTIMIENTO' | 'DECLARACION' | 'SOLICITUD';
+  activeTab: 'DESISTIMIENTO' | 'DECLARACION' | 'SOLICITUD' | 'RETIRO_DENUNCIA';
   formData: ActaFormData;
   declaracionData: DeclaracionFormData;
   solicitudData: SolicitudInformeFormData;
+  retiroDenunciaData: RetiroDenunciaFormData;
   dniAttachments: ImageAttachment[];
   annexAttachments: ImageAttachment[];
   selectedCompany: Company;

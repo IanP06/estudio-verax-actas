@@ -2,16 +2,18 @@ import React from 'react';
 import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
 import { Download, Eye } from 'lucide-react';
 import type { Company, DocumentTemplate } from '../../config/templates';
-import type { ActaFormData, DeclaracionFormData, SolicitudInformeFormData, ImageAttachment } from '../../types/acta';
+import type { ActaFormData, DeclaracionFormData, SolicitudInformeFormData, RetiroDenunciaFormData, ImageAttachment } from '../../types/acta';
 import { ActaPdfDocument } from './ActaPdfDocument';
 import { ActaDeclaracionPdf } from './ActaDeclaracionPdf';
 import { SolicitudInformePdf } from './SolicitudInformePdf';
+import { RetiroDenunciaPdf } from './RetiroDenunciaPdf';
 
 interface PdfPreviewPanelProps {
-  activeTab: 'DESISTIMIENTO' | 'DECLARACION' | 'SOLICITUD';
+  activeTab: 'DESISTIMIENTO' | 'DECLARACION' | 'SOLICITUD' | 'RETIRO_DENUNCIA';
   formData: ActaFormData;
   declaracionData: DeclaracionFormData;
   solicitudData: SolicitudInformeFormData;
+  retiroDenunciaData: RetiroDenunciaFormData;
   dniAttachments: ImageAttachment[];
   annexAttachments: ImageAttachment[];
   selectedCompany: Company;
@@ -23,6 +25,7 @@ export const PdfPreviewPanel: React.FC<PdfPreviewPanelProps> = ({
   formData,
   declaracionData,
   solicitudData,
+  retiroDenunciaData,
   dniAttachments,
   annexAttachments,
   selectedCompany,
@@ -32,7 +35,18 @@ export const PdfPreviewPanel: React.FC<PdfPreviewPanelProps> = ({
   let downloadFileName = '';
   let previewTitle = '';
 
-  if (activeTab === 'SOLICITUD') {
+  if (activeTab === 'RETIRO_DENUNCIA') {
+    currentDocument = (
+      <RetiroDenunciaPdf
+        formData={retiroDenunciaData}
+        dniAttachments={dniAttachments}
+        annexAttachments={annexAttachments}
+        company={selectedCompany}
+      />
+    );
+    downloadFileName = `Retiro_Denuncia_${selectedCompany.id}_${retiroDenunciaData.nombreCompleto || 'Siniestro'}.pdf`;
+    previewTitle = 'Vista Previa: Retiro de Denuncia';
+  } else if (activeTab === 'SOLICITUD') {
     currentDocument = (
       <SolicitudInformePdf
         formData={solicitudData}
@@ -77,7 +91,7 @@ export const PdfPreviewPanel: React.FC<PdfPreviewPanelProps> = ({
               {previewTitle}
             </h3>
             <p className="text-xs text-slate-300">
-              Renderizado directo en tiempo real • Listo para envío u oficio
+              Renderizado directo en tiempo real • Listo para envío o Adobe Sign
             </p>
           </div>
         </div>
