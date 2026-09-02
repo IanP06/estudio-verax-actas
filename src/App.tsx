@@ -24,6 +24,7 @@ export function App() {
   const [formData, setFormData] = useState<ActaFormData>({
     companyId: 'ANTARTIDA',
     templateId: 'ANTARTIDA_TITULAR',
+    registroInterno: '',
     fecha: today,
     numeroSiniestro: '',
     numeroPoliza: '',
@@ -47,6 +48,7 @@ export function App() {
   const [declaracionData, setDeclaracionData] = useState<DeclaracionFormData>({
     companyId: 'ANTARTIDA',
     condicionFirmante: CONDICIONES_FIRMANTE[0],
+    registroInterno: '',
     numeroSiniestro: '',
     numeroPoliza: '',
     numeroReferencia: '',
@@ -65,6 +67,7 @@ export function App() {
   const [solicitudData, setSolicitudData] = useState<SolicitudInformeFormData>({
     companyId: 'ANTARTIDA',
     tipoModelo: 'COLABORACION_GENERAL',
+    registroInterno: '',
     destinatarioInstitucion: '',
     numeroSiniestro: '',
     puntosSolicitud: '',
@@ -73,6 +76,7 @@ export function App() {
   // Estado para Retiro de Denuncia (Tab 4)
   const [retiroDenunciaData, setRetiroDenunciaData] = useState<RetiroDenunciaFormData>({
     companyId: 'ANTARTIDA',
+    registroInterno: '',
     numeroSiniestro: '',
     numeroPoliza: '',
     fechaOcurrencia: '',

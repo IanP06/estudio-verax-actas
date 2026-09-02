@@ -44,7 +44,8 @@ export const PdfPreviewPanel: React.FC<PdfPreviewPanelProps> = ({
         company={selectedCompany}
       />
     );
-    downloadFileName = `Retiro_Denuncia_${selectedCompany.id}_${retiroDenunciaData.nombreCompleto || 'Siniestro'}.pdf`;
+    const reg = retiroDenunciaData.registroInterno?.trim() || 'S-N';
+    downloadFileName = `${reg} - Retiro de Denuncia - ${selectedCompany.id}.pdf`;
     previewTitle = 'Vista Previa: Retiro de Denuncia';
   } else if (activeTab === 'SOLICITUD') {
     currentDocument = (
@@ -54,7 +55,8 @@ export const PdfPreviewPanel: React.FC<PdfPreviewPanelProps> = ({
         company={selectedCompany}
       />
     );
-    downloadFileName = `Solicitud_Informe_${selectedCompany.id}_Siniestro_${solicitudData.numeroSiniestro || 'Requerimiento'}.pdf`;
+    const reg = solicitudData.registroInterno?.trim() || 'S-N';
+    downloadFileName = `${reg} - Solicitud de Informe - ${selectedCompany.id}.pdf`;
     previewTitle = 'Vista Previa: Solicitud de Informe / Colaboración';
   } else if (activeTab === 'DECLARACION') {
     currentDocument = (
@@ -65,7 +67,8 @@ export const PdfPreviewPanel: React.FC<PdfPreviewPanelProps> = ({
         company={selectedCompany}
       />
     );
-    downloadFileName = `Acta_Declaracion_${selectedCompany.id}_${declaracionData.nombreCompleto || 'Siniestro'}.pdf`;
+    const reg = declaracionData.registroInterno?.trim() || 'S-N';
+    downloadFileName = `${reg} - Acta de Declaracion - ${selectedCompany.id}.pdf`;
     previewTitle = 'Vista Previa: Acta de Declaración';
   } else {
     currentDocument = (
@@ -76,7 +79,8 @@ export const PdfPreviewPanel: React.FC<PdfPreviewPanelProps> = ({
         template={selectedTemplate}
       />
     );
-    downloadFileName = `Acta_Desistimiento_${selectedCompany.id}_${formData.nombreCompleto || 'Siniestro'}.pdf`;
+    const reg = formData.registroInterno?.trim() || 'S-N';
+    downloadFileName = `${reg} - Acta de Desistimiento - ${selectedCompany.id}.pdf`;
     previewTitle = 'Vista Previa: Acta de Desistimiento';
   }
 

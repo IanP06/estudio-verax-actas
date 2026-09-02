@@ -11,7 +11,8 @@ import {
   MapPin,
   Calendar,
   Car,
-  RotateCcw
+  RotateCcw,
+  Tag
 } from 'lucide-react';
 import { COMPANIES } from '../../config/templates';
 import type { Company } from '../../config/templates';
@@ -57,6 +58,7 @@ export const RetiroDenunciaForm: React.FC<RetiroDenunciaFormProps> = ({
   const handleClearForm = () => {
     reset({
       companyId: selectedCompany.id,
+      registroInterno: '',
       numeroSiniestro: '',
       numeroPoliza: '',
       fechaOcurrencia: '',
@@ -140,6 +142,21 @@ export const RetiroDenunciaForm: React.FC<RetiroDenunciaFormProps> = ({
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* N° de Registro Interno */}
+          <div className="md:col-span-3">
+            <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              <Tag className="w-3.5 h-3.5 text-slate-400" />
+              N° de Registro Interno
+            </label>
+            <input
+              type="text"
+              tabIndex={2}
+              placeholder=""
+              {...register('registroInterno')}
+              className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-verax-blue/20 focus:border-verax-blue transition"
+            />
+          </div>
+
           {/* N° Siniestro */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
@@ -148,7 +165,7 @@ export const RetiroDenunciaForm: React.FC<RetiroDenunciaFormProps> = ({
             </label>
             <input
               type="text"
-              tabIndex={2}
+              tabIndex={3}
               placeholder=""
               {...register('numeroSiniestro')}
               className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -172,7 +189,7 @@ export const RetiroDenunciaForm: React.FC<RetiroDenunciaFormProps> = ({
             </label>
             <input
               type="text"
-              tabIndex={3}
+              tabIndex={4}
               placeholder=""
               {...register('numeroPoliza')}
               className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -196,7 +213,7 @@ export const RetiroDenunciaForm: React.FC<RetiroDenunciaFormProps> = ({
             </label>
             <input
               type="date"
-              tabIndex={4}
+              tabIndex={5}
               {...register('fechaOcurrencia')}
               className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
                 errors.fechaOcurrencia
@@ -229,7 +246,7 @@ export const RetiroDenunciaForm: React.FC<RetiroDenunciaFormProps> = ({
             </label>
             <input
               type="text"
-              tabIndex={5}
+              tabIndex={6}
               placeholder=""
               {...register('nombreCompleto')}
               className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 uppercase transition ${
@@ -253,7 +270,7 @@ export const RetiroDenunciaForm: React.FC<RetiroDenunciaFormProps> = ({
             </label>
             <input
               type="text"
-              tabIndex={6}
+              tabIndex={7}
               placeholder=""
               {...register('dni')}
               className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -277,7 +294,7 @@ export const RetiroDenunciaForm: React.FC<RetiroDenunciaFormProps> = ({
             </label>
             <input
               type="email"
-              tabIndex={7}
+              tabIndex={8}
               placeholder=""
               {...register('email')}
               className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -302,7 +319,7 @@ export const RetiroDenunciaForm: React.FC<RetiroDenunciaFormProps> = ({
               </label>
               <input
                 type="text"
-                tabIndex={8}
+                tabIndex={9}
                 placeholder=""
                 {...register('domicilioCalle')}
                 className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -319,7 +336,7 @@ export const RetiroDenunciaForm: React.FC<RetiroDenunciaFormProps> = ({
               </label>
               <input
                 type="text"
-                tabIndex={9}
+                tabIndex={10}
                 placeholder=""
                 {...register('domicilioLocalidad')}
                 className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -336,7 +353,7 @@ export const RetiroDenunciaForm: React.FC<RetiroDenunciaFormProps> = ({
               </label>
               <input
                 type="text"
-                tabIndex={10}
+                tabIndex={11}
                 placeholder=""
                 {...register('domicilioProvincia')}
                 className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -364,7 +381,7 @@ export const RetiroDenunciaForm: React.FC<RetiroDenunciaFormProps> = ({
             </label>
             <input
               type="text"
-              tabIndex={11}
+              tabIndex={12}
               placeholder=""
               {...register('vehiculoMarca')}
               className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -381,7 +398,7 @@ export const RetiroDenunciaForm: React.FC<RetiroDenunciaFormProps> = ({
             </label>
             <input
               type="text"
-              tabIndex={12}
+              tabIndex={13}
               placeholder=""
               {...register('vehiculoModelo')}
               className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -398,7 +415,7 @@ export const RetiroDenunciaForm: React.FC<RetiroDenunciaFormProps> = ({
             </label>
             <input
               type="text"
-              tabIndex={13}
+              tabIndex={14}
               placeholder=""
               {...register('vehiculoDominio')}
               className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 uppercase transition ${

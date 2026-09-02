@@ -82,6 +82,7 @@ export const ActaForm: React.FC<ActaFormProps> = ({
     reset({
       companyId: selectedCompany.id,
       templateId: selectedTemplate.id,
+      registroInterno: '',
       fecha: today,
       numeroSiniestro: '',
       numeroPoliza: '',
@@ -278,6 +279,21 @@ export const ActaForm: React.FC<ActaFormProps> = ({
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* N° de Registro Interno */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              <Tag className="w-3.5 h-3.5 text-slate-400" />
+              N° de Registro Interno
+            </label>
+            <input
+              type="text"
+              tabIndex={6}
+              placeholder=""
+              {...register('registroInterno')}
+              className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-verax-blue/20 focus:border-verax-blue transition"
+            />
+          </div>
+
           {/* Fecha del Acta */}
           {hasField('FECHA') && (
             <div>
@@ -287,7 +303,7 @@ export const ActaForm: React.FC<ActaFormProps> = ({
               </label>
               <input
                 type="date"
-                tabIndex={6}
+                tabIndex={7}
                 {...register('fecha')}
                 className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
                   errors.fecha
@@ -307,7 +323,7 @@ export const ActaForm: React.FC<ActaFormProps> = ({
               </label>
               <input
                 type="text"
-                tabIndex={7}
+                tabIndex={8}
                 placeholder=""
                 {...register('numeroSiniestro')}
                 className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -333,7 +349,7 @@ export const ActaForm: React.FC<ActaFormProps> = ({
               </label>
               <input
                 type="text"
-                tabIndex={8}
+                tabIndex={9}
                 placeholder=""
                 {...register('numeroPoliza')}
                 className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-verax-blue/20 focus:border-verax-blue transition"
@@ -350,7 +366,7 @@ export const ActaForm: React.FC<ActaFormProps> = ({
               </label>
               <input
                 type="date"
-                tabIndex={9}
+                tabIndex={10}
                 {...register('fechaOcurrencia')}
                 className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-verax-blue/20 focus:border-verax-blue transition"
               />
@@ -366,7 +382,7 @@ export const ActaForm: React.FC<ActaFormProps> = ({
               </label>
               <input
                 type="text"
-                tabIndex={10}
+                tabIndex={11}
                 placeholder=""
                 {...register('ref')}
                 className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-verax-blue/20 focus:border-verax-blue transition"
@@ -390,7 +406,7 @@ export const ActaForm: React.FC<ActaFormProps> = ({
             </label>
             <input
               type="text"
-              tabIndex={11}
+              tabIndex={12}
               placeholder=""
               {...register('vehiculoAsegurado')}
               className="w-full px-3.5 py-2.5 text-sm bg-white border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-verax-blue/20 focus:border-verax-blue transition"
@@ -413,7 +429,7 @@ export const ActaForm: React.FC<ActaFormProps> = ({
             </label>
             <input
               type="text"
-              tabIndex={12}
+              tabIndex={13}
               placeholder=""
               {...register('causanteDano')}
               className="w-full px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-verax-red/20 focus:border-verax-red transition"
@@ -435,7 +451,7 @@ export const ActaForm: React.FC<ActaFormProps> = ({
           </label>
           <textarea
             rows={3}
-            tabIndex={13}
+            tabIndex={14}
             placeholder=""
             {...register('textoAdicional')}
             className="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-verax-blue/20 focus:border-verax-blue transition"

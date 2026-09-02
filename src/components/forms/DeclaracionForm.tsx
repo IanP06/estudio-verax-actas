@@ -64,6 +64,7 @@ export const DeclaracionForm: React.FC<DeclaracionFormProps> = ({
     reset({
       companyId: selectedCompany.id,
       condicionFirmante: CONDICIONES_FIRMANTE[0],
+      registroInterno: '',
       numeroSiniestro: '',
       numeroPoliza: '',
       numeroReferencia: '',
@@ -167,6 +168,21 @@ export const DeclaracionForm: React.FC<DeclaracionFormProps> = ({
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* N° de Registro Interno */}
+          <div className="md:col-span-2">
+            <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+              <Tag className="w-3.5 h-3.5 text-slate-400" />
+              N° de Registro Interno
+            </label>
+            <input
+              type="text"
+              tabIndex={3}
+              placeholder=""
+              {...register('registroInterno')}
+              className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-verax-blue/20 focus:border-verax-blue transition"
+            />
+          </div>
+
           {/* N° Siniestro */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
@@ -175,7 +191,7 @@ export const DeclaracionForm: React.FC<DeclaracionFormProps> = ({
             </label>
             <input
               type="text"
-              tabIndex={3}
+              tabIndex={4}
               placeholder=""
               {...register('numeroSiniestro')}
               className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -199,7 +215,7 @@ export const DeclaracionForm: React.FC<DeclaracionFormProps> = ({
             </label>
             <input
               type="text"
-              tabIndex={4}
+              tabIndex={5}
               placeholder=""
               {...register('numeroPoliza')}
               className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -226,7 +242,7 @@ export const DeclaracionForm: React.FC<DeclaracionFormProps> = ({
                   </label>
                   <input
                     type="text"
-                    tabIndex={5}
+                    tabIndex={6}
                     placeholder=""
                     {...register('numeroReferencia')}
                     className="w-full px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-verax-blue/20 focus:border-verax-blue transition"
@@ -240,7 +256,7 @@ export const DeclaracionForm: React.FC<DeclaracionFormProps> = ({
                   </label>
                   <input
                     type="text"
-                    tabIndex={6}
+                    tabIndex={7}
                     placeholder=""
                     {...register('numeroJuicio')}
                     className="w-full px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-verax-blue/20 focus:border-verax-blue transition"
@@ -268,7 +284,7 @@ export const DeclaracionForm: React.FC<DeclaracionFormProps> = ({
             </label>
             <input
               type="text"
-              tabIndex={7}
+              tabIndex={8}
               placeholder=""
               {...register('nombreCompleto')}
               className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 uppercase transition ${
@@ -292,7 +308,7 @@ export const DeclaracionForm: React.FC<DeclaracionFormProps> = ({
             </label>
             <input
               type="text"
-              tabIndex={8}
+              tabIndex={9}
               placeholder=""
               {...register('nacionalidad')}
               className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-verax-blue/20 focus:border-verax-blue uppercase transition"
@@ -307,7 +323,7 @@ export const DeclaracionForm: React.FC<DeclaracionFormProps> = ({
             </label>
             <input
               type="text"
-              tabIndex={9}
+              tabIndex={10}
               placeholder=""
               {...register('dni')}
               className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -331,7 +347,7 @@ export const DeclaracionForm: React.FC<DeclaracionFormProps> = ({
             </label>
             <input
               type="email"
-              tabIndex={10}
+              tabIndex={11}
               placeholder=""
               {...register('email')}
               className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -356,7 +372,7 @@ export const DeclaracionForm: React.FC<DeclaracionFormProps> = ({
               </label>
               <input
                 type="text"
-                tabIndex={11}
+                tabIndex={12}
                 placeholder=""
                 {...register('domicilioCalle')}
                 className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -373,7 +389,7 @@ export const DeclaracionForm: React.FC<DeclaracionFormProps> = ({
               </label>
               <input
                 type="text"
-                tabIndex={12}
+                tabIndex={13}
                 placeholder=""
                 {...register('domicilioLocalidad')}
                 className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -390,7 +406,7 @@ export const DeclaracionForm: React.FC<DeclaracionFormProps> = ({
               </label>
               <input
                 type="text"
-                tabIndex={13}
+                tabIndex={14}
                 placeholder=""
                 {...register('domicilioProvincia')}
                 className={`w-full px-3.5 py-2 text-sm border rounded-xl outline-none focus:ring-2 transition ${
@@ -417,7 +433,7 @@ export const DeclaracionForm: React.FC<DeclaracionFormProps> = ({
           </label>
           <textarea
             rows={10}
-            tabIndex={14}
+            tabIndex={15}
             placeholder=""
             {...register('textoDeclaracion')}
             className={`w-full px-3.5 py-2.5 text-sm border rounded-xl outline-none focus:ring-2 transition leading-relaxed ${

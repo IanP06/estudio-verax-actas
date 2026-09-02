@@ -15,6 +15,9 @@ export const actaFormSchema = z.object({
   companyId: z.enum(['ANTARTIDA', 'ATM', 'PROVINCIA', 'SANCOR']),
   templateId: z.string().min(1, 'Seleccione un tipo de acta'),
 
+  // Registro Interno
+  registroInterno: z.string().optional(),
+
   // Campos generales
   fecha: z.string().min(1, 'Seleccione la fecha'),
   numeroSiniestro: z.string().min(1, 'El número de siniestro es obligatorio'),
@@ -52,6 +55,7 @@ export type ActaFormData = z.infer<typeof actaFormSchema>;
 export const declaracionFormSchema = z.object({
   companyId: z.enum(['ANTARTIDA', 'ATM', 'PROVINCIA', 'SANCOR']),
   condicionFirmante: z.string().min(1, 'Seleccione la condición del firmante'),
+  registroInterno: z.string().optional(),
   numeroSiniestro: z.string().min(1, 'El número de siniestro es obligatorio'),
   numeroPoliza: z.string().min(1, 'El número de póliza es obligatorio'),
   numeroReferencia: z.string().optional(),
@@ -71,6 +75,7 @@ export type DeclaracionFormData = z.infer<typeof declaracionFormSchema>;
 export const solicitudInformeFormSchema = z.object({
   companyId: z.enum(['ANTARTIDA', 'ATM', 'PROVINCIA', 'SANCOR']),
   tipoModelo: z.enum(['COLABORACION_GENERAL', 'INFORME_MEDICO']),
+  registroInterno: z.string().optional(),
   destinatarioInstitucion: z.string().min(2, 'Ingrese el destinatario o la institución'),
   numeroSiniestro: z.string().min(1, 'El número de siniestro es obligatorio'),
   puntosSolicitud: z.string().optional(),
@@ -88,6 +93,7 @@ export type SolicitudInformeFormData = z.infer<typeof solicitudInformeFormSchema
 
 export const retiroDenunciaFormSchema = z.object({
   companyId: z.enum(['ANTARTIDA', 'ATM', 'PROVINCIA', 'SANCOR']),
+  registroInterno: z.string().optional(),
   numeroSiniestro: z.string().min(1, 'El número de siniestro es obligatorio'),
   numeroPoliza: z.string().min(1, 'El número de póliza es obligatorio'),
   fechaOcurrencia: z.string().min(1, 'Seleccione la fecha de ocurrencia'),
