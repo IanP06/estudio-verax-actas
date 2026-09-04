@@ -45,7 +45,8 @@ export const PdfPreviewPanel: React.FC<PdfPreviewPanelProps> = ({
       />
     );
     const reg = retiroDenunciaData.registroInterno?.trim() || 'S-N';
-    downloadFileName = `${reg} - Retiro de Denuncia - ${selectedCompany.id}.pdf`;
+    const signerName = retiroDenunciaData.nombreCompleto?.trim() || 'S-N';
+    downloadFileName = `${reg} - Retiro de Denuncia - ${signerName}.pdf`;
     previewTitle = 'Vista Previa: Retiro de Denuncia';
   } else if (activeTab === 'SOLICITUD') {
     currentDocument = (
@@ -68,7 +69,8 @@ export const PdfPreviewPanel: React.FC<PdfPreviewPanelProps> = ({
       />
     );
     const reg = declaracionData.registroInterno?.trim() || 'S-N';
-    downloadFileName = `${reg} - Acta de Declaracion - ${selectedCompany.id}.pdf`;
+    const signerName = declaracionData.nombreCompleto?.trim() || 'S-N';
+    downloadFileName = `${reg} - Acta de Declaracion - ${signerName}.pdf`;
     previewTitle = 'Vista Previa: Acta de Declaración';
   } else {
     currentDocument = (
@@ -80,7 +82,8 @@ export const PdfPreviewPanel: React.FC<PdfPreviewPanelProps> = ({
       />
     );
     const reg = formData.registroInterno?.trim() || 'S-N';
-    downloadFileName = `${reg} - Acta de Desistimiento - ${selectedCompany.id}.pdf`;
+    const signerName = formData.nombreCompleto?.trim() || 'S-N';
+    downloadFileName = `${reg} - Acta de Desistimiento - ${signerName}.pdf`;
     previewTitle = 'Vista Previa: Acta de Desistimiento';
   }
 
